@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import MoviesList from "./components/MoviesList";
+import AddMovie from "./components/AddMovie";
 import "./App.css";
 
 function App() {
@@ -11,7 +12,6 @@ function App() {
     const fetchMoviesHandler = useCallback(async () => {
         setIsLoading(true);
         setError(null);
-
         try {
             const response = await fetch("https://swapi.dev/api/films/");
             if (!response.ok) {
@@ -19,6 +19,7 @@ function App() {
             }
 
             const data = await response.json();
+
             const transformedMovies = data.results.map((movieData) => {
                 return {
                     id: movieData.episode_id,
@@ -28,7 +29,6 @@ function App() {
                 };
             });
             setMovies(transformedMovies);
-            setIsLoading(false);
         } catch (error) {
             setError(error.message);
         }
@@ -39,20 +39,29 @@ function App() {
         fetchMoviesHandler();
     }, [fetchMoviesHandler]);
 
+    function addMovieHandler(movie) {
+        console.log(movie);
+    }
+
     let content = <p>Found no movies.</p>;
 
     if (movies.length > 0) {
         content = <MoviesList movies={movies} />;
     }
+
     if (error) {
         content = <p>{error}</p>;
     }
+
     if (isLoading) {
         content = <p>Loading...</p>;
     }
 
     return (
         <React.Fragment>
+            <section>
+                <AddMovie onAddMovie={addMovieHandler} />
+            </section>
             <section>
                 <button onClick={fetchMoviesHandler}>Fetch Movies</button>
             </section>
